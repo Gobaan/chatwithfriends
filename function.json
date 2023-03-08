@@ -1,0 +1,18 @@
+{
+    "bindings": [
+        {
+            "type": "webPubSubTrigger",
+            "direction": "in",
+            "name": "data",
+            "hub": "simplechat",
+            "eventName": "message",
+            "eventType": "user"
+        },
+        {
+            "type": "webPubSub",
+            "name": "actions",
+            "hub": "simplechat",
+            "direction": "out"
+        }
+    ]
+}
