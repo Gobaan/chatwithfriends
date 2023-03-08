@@ -1,0 +1,3 @@
+.funcignore
+.venv/
+.vscode/
