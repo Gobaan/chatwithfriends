@@ -1,27 +1,45 @@
-import logging
-
+from azure.cosmosdb.table.tableservice import TableService
+from azure.cosmosdb.table.models import Entity, AzureException
 import azure.functions as func
 import os
-from azure.cosmosdb.table.tableservice import TableService
-from azure.cosmosdb.table.models import Entity
+import logging
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
-    # Initialize the Azure Table storage client
-    account_name = os.environ['AzureStorageAccountName']
-    account_key = os.environ['AzureStorageAccountKey']
-    table_service = TableService(account_name=account_name, account_key=account_key)
+# Initialize TableService with your connection string
+connection_string = 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;'
+table_service = TableService(connection_string=connection_string)
 
-    # Create a new user entity with a unique ID
-    user_data = req.get_json()
-    table_name = 'users'
-    user_id = table_service.query_entities(table_name, select='PartitionKey,RowKey', top=1, order_by='RowKey desc')[0].RowKey + 1
-    user_entity = Entity()
-    user_entity.PartitionKey = table_name
-    user_entity.RowKey = str(user_id)
-    for key, value in user_data.items():
-        setattr(user_entity, key, value)
-    table_service.insert_entity(table_name, user_entity)
+# Define the name of your table and entity that stores the counter value
+table_name = 'counters'
+try:
+    table_service.create_table(table_name)
+except:
+    pass
 
-    # Return the new user ID to the client
-    return func.HttpResponse(f"New user ID: {user_id}")
+counter_entity = Entity()
+counter_entity.PartitionKey = 'mycounter'
+counter_entity.RowKey = 'counter'
+
+def increment_counter():
+    # Retrieve the current counter value from the table
+    try:
+        current_counter = table_service.get_entity(table_name, 'mycounter', 'counter')
+        counter_value = current_counter.counter_value
+    except:
+        counter_entity.counter_value = counter_value = 0
+        table_service.insert_entity(table_name, counter_entity)
+
+    # Increment the counter value
+    counter_value += 1
+    # Update the counter value in the table
+    counter_entity.counter_value = counter_value
+    table_service.update_entity(table_name, counter_entity)
+    return counter_value
+
+increment_counter()
+
+
+def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> func.HttpResponse:
+    # Increment the counter value
+    counter_value = increment_counter()
+
+    res.set(func.HttpResponse(f'The counter value is now {counter_value}'))

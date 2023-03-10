@@ -1,3 +1,7 @@
 .funcignore
 .venv/
 .vscode/
+local.settings.json
+*/__pycache__/
+__azurite*
+__blobstorage*
