@@ -4,4 +4,4 @@
 
 azure-functions
 azure-messaging-webpubsubservice
-azure-cosmosdb-table
+azure-data-tables

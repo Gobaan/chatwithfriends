@@ -14,3 +14,13 @@ https://techcommunity.microsoft.com/t5/apps-on-azure-blog/tutorial-azure-web-pub
 Critical for new projects:
 Remember to set WebPubSubConnectionString, create an event handler, and enable client authentication
 
+
+testing:
+
+first start blob storage.
+
+f1, azurite start table storage service
+then in terminal type
+> func start 
+
+go to urls
