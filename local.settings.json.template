@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "WebPubSubConnectionString": "<Get this value from azure>"
+    "AzureWebJobsWebPubSubHub": "<Get this value from azure>"
+  }
+}
