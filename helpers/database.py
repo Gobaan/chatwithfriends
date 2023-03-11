@@ -2,6 +2,12 @@ from azure.data.tables import TableServiceClient
 from azure.data.tables import UpdateMode
 from azure.core.exceptions import ResourceNotFoundError
 import logging
+import json
+import azure.functions as func
+
+JSON_MIME_TYPE = 'text/json'
+def json_response(json_serialiazable):
+    return func.HttpResponse(json.dumps(json_serialiazable), mimetype = JSON_MIME_TYPE)
 
 def initialize_db():
     # Initialize TableService with your connection string
