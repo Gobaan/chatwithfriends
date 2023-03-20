@@ -15,6 +15,7 @@
                 let url = await res.json();
                 // connect
                 let ws = new WebSocket(url.url);
+                let userId = url.userId;
                 ws.onopen = () => console.log('connected');
                 ws.onmessage = event => {
                     let m = document.createElement('p');
@@ -25,7 +26,8 @@
                 let message = document.querySelector('#message');
                 message.addEventListener('keypress', e => {
                     if (e.charCode !== 13) return;
-                    ws.send(message.value);
+                    new_message = {'userId': userId, 'text': message.value}
+                    ws.send(JSON.stringify(new_message))
                     message.value = '';
                 });
                 }

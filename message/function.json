@@ -6,6 +6,7 @@
             "direction": "in",
             "name": "request",
             "hub": "simplechat",
+            "connection": "WebPubSubConnectionString",
             "eventName": "message",
             "eventType": "user"
         }
