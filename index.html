@@ -20,13 +20,18 @@
                 ws.onmessage = event => {
                     let m = document.createElement('p');
                     let parse = JSON.parse(event.data);
-                    m.innerText = parse.userId + ': ' + parse.text;
+                    m.innerText = parse.userId + ': ' + parse.translated;
                     messages.appendChild(m);
                 };
                 let message = document.querySelector('#message');
                 message.addEventListener('keypress', e => {
                     if (e.charCode !== 13) return;
-                    new_message = {'userId': userId, 'text': message.value}
+                    new_message = {
+                        'userId': userId, 
+                        'text': message.value,
+                        'sessionId': 'mycounter',
+                        'language': 'en-us',
+                    }
                     ws.send(JSON.stringify(new_message))
                     message.value = '';
                 });

@@ -7,6 +7,7 @@ table_client = database.initialize_db()
 # Use the HTTP trigger decorator
 def main(req: func.HttpRequest) -> func.HttpResponse:
     # Increment the counter value
-    counter_value = database.increment_counter(table_client)
-    database.set_preferences(table_client, counter_value)
-    return database.json_response({'user_number': counter_value})
+    preferences = {'language': req.params['language']}
+    user_id = req.params['user_id']
+    database.set_preferences(table_client, user_id, preferences)
+    return database.json_response({'new_language': preferences})
