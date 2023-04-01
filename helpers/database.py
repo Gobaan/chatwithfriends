@@ -13,11 +13,13 @@ DataTuple = namedtuple('DataTuple', ['session_id', 'source_user', 'target_user',
 # TODO: Move this to a test case so it can just be mocked
 if __name__ == '__main__':
     os.environ['AzureStorageAccountKey'] = 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;'
-
+os.environ['AzureStorageAccountKey'] = 'DefaultEndpointsProtocol=https;AccountName=chatwithfriendsdb;AccountKey=bwzFahW172zCTJmOQDXS9TXMVIim4Hbc9rZenJvefyvZEBqXxDisd5lNio6CrE3wzPZH+fzwQH4q+AStW3IV1g==;EndpointSuffix=core.windows.net'
+os.environ['AzureStorageAccountName'] = 'chatwithfriendsdb'
 JSON_MIME_TYPE = 'text/json'
 def json_response(json_serialiazable):
     return func.HttpResponse(json.dumps(json_serialiazable), mimetype = JSON_MIME_TYPE)
 
+# TODO make this a static instance
 def initialize_db():
     # Initialize TableService with your connection string
     connection_string = os.environ["AzureStorageAccountKey"]
@@ -57,7 +59,7 @@ def set_preferences(table_client: TableServiceClient, user_id, preferences = Non
     except ResourceNotFoundError:
         entity = {'PartitionKey': session_id,
                   'RowKey': user_id,
-                  'language': 'en-us',
+                  'language': 'en',
                  }
         table_client.create_entity(entity=entity)
 
@@ -66,11 +68,18 @@ def set_preferences(table_client: TableServiceClient, user_id, preferences = Non
     table_client.update_entity(mode=UpdateMode.REPLACE, entity=entity)
     return entity
 
+# TODO: fix this so users languages are not session specific?
 def get_all_user_languages(table_client: TableServiceClient, session_id = 'mycounter'):
     entities = table_client.query_entities(f"PartitionKey eq '{session_id}' and not (RowKey eq 'counter')")
     for entity in entities:
         yield (entity['RowKey'], entity['language'])
 
+def get_user_language(table_client: TableServiceClient, user_id, session_id = 'mycounter'):
+    entities = table_client.query_entities(f"PartitionKey eq '{session_id}' and RowKey eq '{user_id}'")
+    for entity in entities:
+        return entity['language']
+def get_webosocket_id(user_id:str, session_id:str):
+    return user_id + session_id
                             
 if __name__ == '__main__':
     for user, language in get_all_user_languages(table_client):

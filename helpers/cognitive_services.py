@@ -1,11 +1,13 @@
 import os
 import requests
+import logging
 
 #TODO: Make this do multiple translation 
 def translate(text, source_language, target_language):
     key = os.environ['AzureCognitiveServiceKey']
     region = os.environ['AzureCognitiveServiceRegion']
     endpoint = os.environ['AzureTranslationEndpoint']
+
     # Use the Translator translate function
     url = endpoint + '/translate'
     # Build the request
@@ -24,6 +26,11 @@ def translate(text, source_language, target_language):
     }]
     # Send the request and get response
     request = requests.post(url, params=params, headers=headers, json=body)
+    # Return a response indicating whether the event was successfully added
+    if request.status_code != 200:
+        logging.error(f"Error adding event: {response.text}")
+    else:
+        logging.info(f"Translation successful: {request.json()}")
     response = request.json()
     # Get translation    
     translation = response[0]["translations"][0]["text"]
@@ -32,3 +39,4 @@ def translate(text, source_language, target_language):
 
 if __name__ == '__main__':
     print(translate('Hello world!', 'en', 'fr'))
+

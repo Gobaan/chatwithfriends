@@ -14,8 +14,8 @@ def create_event(data):
     # Create a new event to add to the topic
     event = {
         'id': '1',
+        'subject': "The message",
         'eventType': 'MessageRecieved',
-        'subject': 'example/subject',
         "eventTime": str(datetime.datetime.now()),
         'data': data,
     }
@@ -32,9 +32,9 @@ def create_event(data):
 
     # Return a response indicating whether the event was successfully added
     if response.status_code == 200:
-        return func.HttpResponse(f"Event added: {json.dumps(event)}")
+        logging.info(f"Event added: {json.dumps(event)}")
     else:
-        return func.HttpResponse(f"Error adding event: {response.text}")
+        logging.error(f"Error adding event: {response.text}")
 
 table_client = database.initialize_db()
 # Use the HTTP trigger decorator
@@ -47,7 +47,7 @@ async def main(request:str) -> func.HttpResponse:
     source_language = params['language']
 
     # TODO: Investigate how to store chat state between sessions
-    for user, language in database.get_all_user_languages(table_client):
+    for user, language in database.get_all_user_languages(table_client, session_id=session_id):
         data = database.DataTuple(
             session_id = session_id,
             source_user = user_id,
