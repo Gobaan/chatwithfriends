@@ -1,0 +1,14 @@
+{
+    "scriptFile": "__init__.py",
+    "bindings": [
+        {
+            "type": "webPubSubTrigger",
+            "direction": "in",
+            "name": "request",
+            "hub": "simplechat",
+            "connection": "WebPubSubConnectionString",
+            "eventName": "message",
+            "eventType": "user"
+        }
+    ]
+}

@@ -1,0 +1,102 @@
+<html>
+    <!-- include Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha512-5WvZa4N7Jq3TVNCp4rjcBMlc6pT3lZ7gVxjtI6IkKW+uItSa+rFgtFljvZnCxQGj8SUX5DHraKE6Mn/4smK1Cg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <body>
+        <h1>Azure Web PubSub Serverless Chat App</h1>
+        <div id="login"></div>
+        <p></p>
+`
+        <!-- add a button with a dropdown menu -->
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Select Country
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#" data-country="en">United States</a>
+            <a class="dropdown-item" href="#" data-country="ru">Russian</a>
+            <a class="dropdown-item" href="#" data-country="es">Spain</a>
+            <!-- add more countries as needed -->
+          </div>
+        </div>
+        <input id="message" placeholder="Type to chat...">
+        <div id="messages"></div>
+        <script>
+            (async function () {
+                // negotiate
+                let messages = document.querySelector('#messages');
+                let sessionId = localStorage.getItem('sessionId');
+                let userId = localStorage.getItem(sessionId + ':userId');
+                
+                let res = await fetch(`${window.location.origin}/api/negotiate?userId=${userId}&sessionId=${sessionId}`, {
+                    credentials: "include",
+                });
+                let url = await res.json();
+                // connect
+                let ws = new WebSocket(url.url);
+                userId = url.userId;
+                sessionId = url.sessionId;
+                language = url.language;
+                localStorage.setItem('sessionId', sessionId);
+                localStorage.setItem(sessionId + ':userId', userId);
+                localStorage.setItem(sessionId + ':language', language);
+                ws.onopen = () => console.log('connected');
+                ws.onmessage = event => {
+                    let m = document.createElement('p');
+                    let parse = JSON.parse(event.data);
+                    if (parse.translated === '')
+                    {
+                        parse.translated = parse.original;
+                    }
+                    m.innerText = parse.userId + ': ' + parse.translated;
+                    messages.appendChild(m);
+                };
+                let message = document.querySelector('#message');
+                message.addEventListener('keypress', e => {
+                    if (e.charCode !== 13) return;
+                    let language = localStorage.getItem(sessionId + ':language');
+                    new_message = {
+                        'userId': userId, 
+                        'text': message.value,
+                        'sessionId': sessionId,
+                        'language': language,
+                    }
+                    ws.send(JSON.stringify(new_message))
+                    message.value = '';
+                });
+                }
+            )();
+            $(document).ready(function() {
+      // add click event listener to dropdown items
+    $('.dropdown-item').click(function(event) {
+        event.preventDefault();
+        // get the selected country code from the data attribute
+        const countryCode = $(this).data('country');
+        // make API request to set the language based on the country code
+        setLanguage(countryCode);
+    });
+    });
+
+    function setLanguage(countryCode) {
+    // make API request to set language
+
+    let sessionId = localStorage.getItem('sessionId');
+    let userId = localStorage.getItem(sessionId + ':userId');
+    fetch(`${window.location.origin}/api/set_language?language=${countryCode}&userId=${userId}&sessionId=${sessionId}`)
+        .then(response => {
+            localStorage.setItem(sessionId + ':language', countryCode);
+        // handle response, e.g. update UI to show language is set
+        })
+        .catch(error => {
+        console.error(error);
+        });
+}
+        </script>
+        
+    </body>
+    
+</html>
