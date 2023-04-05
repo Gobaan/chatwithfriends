@@ -28,7 +28,7 @@ def translate(text, source_language, target_language):
     request = requests.post(url, params=params, headers=headers, json=body)
     # Return a response indicating whether the event was successfully added
     if request.status_code != 200:
-        logging.error(f"Error adding event: {response.text}")
+        logging.error(f"Error adding event: {request.text}")
     else:
         logging.info(f"Translation successful: {request.json()}")
     response = request.json()

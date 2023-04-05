@@ -13,8 +13,6 @@ DataTuple = namedtuple('DataTuple', ['session_id', 'source_user', 'target_user',
 # TODO: Move this to a test case so it can just be mocked
 if __name__ == '__main__':
     os.environ['AzureStorageAccountKey'] = 'DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;'
-os.environ['AzureStorageAccountKey'] = 'DefaultEndpointsProtocol=https;AccountName=chatwithfriendsdb;AccountKey=bwzFahW172zCTJmOQDXS9TXMVIim4Hbc9rZenJvefyvZEBqXxDisd5lNio6CrE3wzPZH+fzwQH4q+AStW3IV1g==;EndpointSuffix=core.windows.net'
-os.environ['AzureStorageAccountName'] = 'chatwithfriendsdb'
 JSON_MIME_TYPE = 'text/json'
 def json_response(json_serialiazable):
     return func.HttpResponse(json.dumps(json_serialiazable), mimetype = JSON_MIME_TYPE)

@@ -11,6 +11,8 @@ def send_message(connection_string, data:database.DataTuple):
         'userId': f'User {data.source_user}', 
         'original': data.message,
         'translated': '',
+        'source_language': data.original_language,
+        'target_language': data.language,
     }
 
     if data.original_language != data.language:
