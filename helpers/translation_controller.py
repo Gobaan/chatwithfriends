@@ -14,16 +14,16 @@ def data_to_translation(data:database.DataTuple):
     }
 
     if data.source_language != data.target_language:
-        logging.info(f'Language: {data.source_language} | New_language: {data.target_language} | Message: {data.message}')
-        new_message['translated'] = cognitive_services.translate(data.message, data.source_language, data.target_language)
+        logging.info(f'Language: {data.source_language} | New_language: {data.target_language} | Message: {new_message["original"]}')
+        new_message['translated'] = cognitive_services.translate(new_message['original'], data.source_language, data.target_language)
     logging.info(f'The full message is: {new_message}')
     return new_message
 
 if __name__ == '__main__':
-    import loadenv
+    import load_environment as load_environment
     import json
-    loadenv.loadenv()
-    test = "{'userId': 'User 2', 'original': 'Hola amigo hablo español.', 'translated': '', 'translated_blob': '', 'blob': 'https://chatwithfriendsdb.blob.core.windows.net/audio-messages-ogg/a5933c65-3300-4108-bc72-b4e4f8c6a0bb.ogg?sv=2021-12-02&se=2023-04-13T03%3A55%3A27Z&sr=b&sp=rw&sig=OVzuSzerMXxd%2FMc1J3A3hhQEnOJzGqkxSe%2Fs9BMXLVM%3D', 'source_language': 'es', 'target_language': 'en'}"
+    load_environment.loadenv()
+    test = "{'userId': 'User 2', 'original': 'Lo siento.', 'translated': '', 'translated_blob': '', 'blob': 'https://chatwithfriendsdb.blob.core.windows.net/audio-messages-ogg/80428d42-5d68-4f14-bfd1-62f7c68276c3.ogg?sv=2021-12-02&se=2023-04-13T10%3A47%3A32Z&sr=b&sp=rw&sig=8T0FP7IbrvWHqdzid4Yq3BpWH0bRGm5Y8lDDEwW%2Fk0k%3D', 'source_language': 'es', 'target_language': 'en'}"
     test = test.replace("'", '"')
     data_json = json.loads(test)
     test_data = database.DataTuple(
@@ -36,3 +36,4 @@ if __name__ == '__main__':
         target_user="gobi"
     )
     message = data_to_translation(test_data)
+    print (message)

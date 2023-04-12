@@ -6,8 +6,8 @@ from helpers import database
 from helpers import translation_controller
 
 def send_message(connection_string, data:database.DataTuple): 
-    service: WebPubSubServiceClient = WebPubSubServiceClient.from_connection_string(connection_string, hub='simplechat')
     new_message = translation_controller.data_to_translation(data)
+    service: WebPubSubServiceClient = WebPubSubServiceClient.from_connection_string(connection_string, hub='simplechat')
     service.send_to_user(
         database.get_webosocket_id(data.target_user, data.session_id), 
         new_message

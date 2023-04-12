@@ -66,8 +66,8 @@ def speech_to_text(audio_blob_url, source_language, format='ogg'):
 
 
 if __name__ == '__main__':
-    import loadenv
-    loadenv.loadenv()
+    import helpers.load_environment as load_environment
+    load_environment.loadenv()
 
     urls = {
         'ogg': 'https://chatwithfriendsdb.blob.core.windows.net/audio-messages-ogg/a5933c65-3300-4108-bc72-b4e4f8c6a0bb.ogg?sv=2021-12-02&se=2023-04-13T03%3A55%3A27Z&sr=b&sp=rw&sig=OVzuSzerMXxd%2FMc1J3A3hhQEnOJzGqkxSe%2Fs9BMXLVM%3D',

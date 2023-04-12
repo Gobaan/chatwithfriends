@@ -56,13 +56,13 @@ async def main(request:str) -> func.HttpResponse:
         logging.info(f'Output blob name {blob}')
 
     # TODO: Investigate how to store chat state between sessions
-    for user, language in table.get_all_user_languages(session_id=session_id):
+    for target_user, target_language in table.get_all_user_languages(session_id=session_id):
         data = database.DataTuple(
             session_id = session_id,
             source_user = user_id,
-            target_user = user,
-            original_language = source_language,
-            language = language,
+            target_user = target_user,
+            source_language = source_language,
+            target_language = target_language,
             message = message,
             blob = blob,
         )
