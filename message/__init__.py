@@ -36,7 +36,7 @@ def create_event(data):
     else:
         logging.error(f"Error adding event: {response.text}")
 
-table_client = database.initialize_db()
+table = database.Database()
 # Use the HTTP trigger decorator
 async def main(request:str) -> func.HttpResponse:
     logging.info(f'Python webpubsub request: {request}')
@@ -45,9 +45,18 @@ async def main(request:str) -> func.HttpResponse:
     user_id = params['userId']
     message = params['text']
     source_language = params['language']
+    blob = ''
+    if 'uri' in params:
+        blob = params['uri'] if 'uri' in params else ''
+        url = 'https://chatwithfriendsffmpeg.azurewebsites.net/api/ConvertFFMPeg'
+        # Define the file paths of the WebM input file anurl = ''d Ogg output file
+        stream = requests.get(params['uri']).content
+        response = requests.post(url, files={"file": stream})
+        blob = response.json()['value']['blobName']
+        logging.info(f'Output blob name {blob}')
 
     # TODO: Investigate how to store chat state between sessions
-    for user, language in database.get_all_user_languages(table_client, session_id=session_id):
+    for user, language in table.get_all_user_languages(session_id=session_id):
         data = database.DataTuple(
             session_id = session_id,
             source_user = user_id,
@@ -55,6 +64,6 @@ async def main(request:str) -> func.HttpResponse:
             original_language = source_language,
             language = language,
             message = message,
-            blob = '',
+            blob = blob,
         )
         create_event(data)

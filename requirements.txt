@@ -7,3 +7,11 @@ azure-messaging-webpubsubservice
 azure-data-tables
 requests_async
 azure-ai-translation-document
+azure-storage-blob
+pydub
+azure-identity
+azure-mgmt-media
+python-dotenv
+aiohttp
+azure-common
+msrestazure

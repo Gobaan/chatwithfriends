@@ -4,6 +4,7 @@ import os
 from azure.messaging.webpubsubservice import WebPubSubServiceClient
 import uuid 
 
+table = database.Database()
 # Use the HTTP trigger decorator
 def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     if 'sessionId' in req.params and req.params['sessionId'] != 'null':
@@ -14,14 +15,14 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     if 'userId' in req.params and req.params['userId'] != 'null':
         user_id = req.params['userId']
     else:
-        user_id = f'{database.increment_counter(database.table_client, session_id)}'
+        user_id = f'{table.increment_counter(session_id)}'
 
     if 'language' in req.params and req.params['language'] != 'null':
         language = req.params['language']
     else:
-        language = database.get_user_language(database.table_client, user_id, session_id) or 'en'
+        language = table.get_user_language(user_id, session_id) or 'en'
     
-    database.set_preferences(database.table_client, user_id, {'language': language}, session_id)
+    table.set_preferences(user_id, {'language': language}, session_id)
 
     client: WebPubSubServiceClient = WebPubSubServiceClient.from_connection_string(os.environ['WebPubSubConnectionString'], os.environ['AzureWebJobsWebPubSubHub'])
     # Connect to the WebPubSub service with the user ID query parameter
@@ -33,6 +34,8 @@ def main(req: func.HttpRequest, res: func.Out[func.HttpResponse]) -> None:
     connection_json ['sessionId'] = session_id
     connection_json ['checksum'] = hash(f'{padding}{user_id}{session_id}')
     connection_json ['language'] = language
+    connection_json ['blobUrl'] = database.get_sas_url(user_id, session_id)
+
     # TODO: save all the sessionIDs associated with this user
     # Create an end point to get all session ids for a given user
     

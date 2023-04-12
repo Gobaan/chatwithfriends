@@ -1,24 +1,13 @@
 from azure.messaging.webpubsubservice import WebPubSubServiceClient
-from helpers import database
 import azure.functions as func
 import logging
 import os
-from helpers import cognitive_services
+from helpers import database
+from helpers import translation_controller
 
 def send_message(connection_string, data:database.DataTuple): 
     service: WebPubSubServiceClient = WebPubSubServiceClient.from_connection_string(connection_string, hub='simplechat')
-    new_message = {
-        'userId': f'User {data.source_user}', 
-        'original': data.message,
-        'translated': '',
-        'source_language': data.original_language,
-        'target_language': data.language,
-    }
-
-    if data.original_language != data.language:
-        logging.info(f'Language: {data.original_language} | New_language: {data.language} | Message: {data.message}')
-        new_message['translated'] = cognitive_services.translate(data.message, data.original_language, data.language)
-    logging.info(f'The full message is: {new_message}')
+    new_message = translation_controller.data_to_translation(data)
     service.send_to_user(
         database.get_webosocket_id(data.target_user, data.session_id), 
         new_message
